@@ -1,0 +1,4 @@
+Flask
+pandas
+scikit-surprise
+flask-cors

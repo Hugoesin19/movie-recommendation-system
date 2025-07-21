@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Movie Recommendation System</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    input[type="number"]:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 30px;
+    }
+
+    li {
+      background: white;
+      margin-bottom: 15px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    li:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        margin: 20px;
+        padding: 15px;
+      }
+
+      button, input[type="number"] {
+        font-size: 1rem;
+        padding: 10px;
+      }
+
+      li {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Movie Recommender</h1>
+  <label for="userId">Enter your user ID:</label>
+  <input type="number" id="userId" min="1" placeholder="E.g. 1" />
+  <button onclick="fetchRecommendations()">Search</button>
+
+  <ul id="resultados"></ul>
+
+  <script>
+    async function fetchRecommendations() {
+      const userId = document.getElementById('userId').value;
+      if (!userId) {
+        alert('Please enter a valid user ID');
+        return;
+      }
+      const url = `http://127.0.0.1:5000/recommend?user_id=${userId}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Server response error');
+        const data = await response.json();
+        const ul = document.getElementById('resultados');
+        ul.innerHTML = '';
+        if (data.length === 0) {
+          ul.innerHTML = '<li>No recommendations found.</li>';
+          return;
+        }
+        data.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = `${item.title} — Estimated rating: ${item.rating.toFixed(2)}`;
+          ul.appendChild(li);
+        });
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
